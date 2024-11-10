@@ -9,6 +9,12 @@ async function bootstrap() {
 
   const logger = new Logger();
 
+  app.enableCors({
+    origin: 'http://localhost:3000',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
+
   const port = process.env.API_PORT || 3001;
 
   await app.listen(port, () => {
