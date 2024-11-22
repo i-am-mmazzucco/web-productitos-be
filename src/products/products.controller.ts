@@ -1,6 +1,7 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { Product } from './products.interface';
+import { CreatePriceBodyDto, ProductIdParamsDto } from './products.dto';
+import { Product } from '../schemas/products.schema';
 
 @Controller('products')
 export class ProductsController {
@@ -11,8 +12,21 @@ export class ProductsController {
     return this.productsService.getAll();
   }
 
-  @Get(':id')
-  async getById(): Promise<string> {
-    return this.productsService.getById();
+  @Post()
+  async create(): Promise<Product> {
+    return this.productsService.create();
+  }
+
+  @Get(':productId')
+  async getById(@Param() params: ProductIdParamsDto): Promise<Product> {
+    return this.productsService.getById(params);
+  }
+
+  @Post(':productId/add-price')
+  async createPrice(
+    @Body() body: CreatePriceBodyDto,
+    @Param() params: ProductIdParamsDto,
+  ): Promise<any> {
+    return this.productsService.createPrice(body, params);
   }
 }

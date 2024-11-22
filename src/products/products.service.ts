@@ -1,118 +1,86 @@
-import { Injectable } from '@nestjs/common';
-import { Product } from './products.interface';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CreatePriceBodyDto, ProductIdParamsDto } from './products.dto';
+import { StoresService } from '../stores/stores.service';
+import { PricesService } from '../prices/prices.service';
+import { Product } from 'src/schemas/products.schema';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { mergeUniqueIds } from './helpers/mapper';
 
 @Injectable()
 export class ProductsService {
-  async getById(): Promise<string> {
-    return 'asd';
+  constructor(
+    @InjectModel(Product.name) private productModel: Model<Product>,
+    private readonly pricesService: PricesService,
+    private readonly storesService: StoresService,
+  ) {}
+
+  async create(): Promise<any> {
+    return {
+      id: 1,
+      name: 'Coca Cola Original 2,25 Litros',
+      imageUrl:
+        'https://http2.mlstatic.com/D_NQ_NP_839337-MLU72637726591_112023-O.webp',
+      price: 123,
+      location: "3km's",
+    };
+  }
+
+  async createPrice(
+    { amount, coordinates, storeName }: CreatePriceBodyDto,
+    params: ProductIdParamsDto,
+  ): Promise<Product> {
+    const product = await this.getById(params);
+    const store = await this.storesService.upsertStore(storeName, coordinates);
+    const price = await this.pricesService.upsertPrice(
+      amount,
+      store._id.toString(),
+    );
+
+    return this.upsertProduct(params.productId, {
+      stores: mergeUniqueIds(product.stores, store._id),
+      prices: mergeUniqueIds(product.prices, price._id),
+    });
+  }
+
+  async getById({ productId }: ProductIdParamsDto): Promise<Product> {
+    const product = await this.productModel
+      .findById(productId)
+      .populate({ path: 'stores', model: 'Store' })
+      .populate({ path: 'prices', model: 'Price' })
+      .exec();
+
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+
+    return product;
   }
 
   async getAll(): Promise<Product[]> {
-    return [
-      {
-        id: 1,
-        name: 'Coca Cola Original 2,25 Litros',
-        imageUrl:
-          'https://http2.mlstatic.com/D_NQ_NP_839337-MLU72637726591_112023-O.webp',
-        price: 123,
-        location: "3km's",
-      },
-      {
-        id: 2,
-        name: 'Gaseosa Cola Pepsi 1.5 Lt',
-        imageUrl:
-          'https://http2.mlstatic.com/D_NQ_NP_992200-MLA79301539840_092024-O.webp',
-        price: 123,
-        location: "3km's",
-      },
-      {
-        id: 3,
-        name: 'Gaseosa Tónica Schweppes',
-        imageUrl:
-          'https://http2.mlstatic.com/D_NQ_NP_905195-MLA76377082522_052024-O.webp',
-        price: 123,
-        location: "3km's",
-      },
-      {
-        id: 4,
-        name: 'Dulce De Leche Clasico Milkaut Mediano',
-        imageUrl:
-          'https://http2.mlstatic.com/D_NQ_NP_609182-MLU75862596562_042024-O.webp',
-        price: 123,
-        location: "3km's",
-      },
-      {
-        id: 5,
-        name: 'Chocolate Milka Con Almendras X 155grs',
-        imageUrl:
-          'https://http2.mlstatic.com/D_NQ_NP_831987-MLA74126700409_012024-O.webp',
-        price: 123,
-        location: "3km's",
-      },
-      {
-        id: 6,
-        name: 'Tableta Chocolate Shot X 170 Gr',
-        imageUrl:
-          'https://http2.mlstatic.com/D_NQ_NP_960991-MLA47693601200_092021-O.webp',
-        price: 123,
-        location: "3km's",
-      },
-      {
-        id: 7,
-        name: 'Relleno Untable Bon O Bon Mediano',
-        imageUrl:
-          'https://http2.mlstatic.com/D_NQ_NP_779305-MLA69887191325_062023-O.webp',
-        price: 123,
-        location: "3km's",
-      },
-      {
-        id: 8,
-        name: 'Relleno Untable De Chocolate Aguila 3 En 1 Mediano',
-        imageUrl:
-          'https://http2.mlstatic.com/D_NQ_NP_761886-MLA69928653673_062023-O.webp',
-        price: 123,
-        location: "3km's",
-      },
-      {
-        id: 9,
-        name: 'Azúcar Ledesma Clásica 1kg',
-        imageUrl:
-          'https://http2.mlstatic.com/D_NQ_NP_800432-MLA70937251527_082023-O.webp',
-        price: 123,
-        location: "3km's",
-      },
-      {
-        id: 10,
-        name: 'Edulcorante Hileret Stevia en pastilla sin TACC frasco 300 u',
-        imageUrl:
-          'https://http2.mlstatic.com/D_NQ_NP_998306-MLU78050169900_082024-O.webp',
-        price: 123,
-        location: "3km's",
-      },
-      {
-        id: 11,
-        name: 'Edulcorante Sidiet Clasico 200ml Sin Calorias sin tacc',
-        imageUrl:
-          'https://http2.mlstatic.com/D_NQ_NP_939798-MLU75173853038_032024-O.webp',
-        price: 123,
-        location: "3km's",
-      },
-      {
-        id: 12,
-        name: 'Harina Pureza con levadura especial pizzas caseras 1kg',
-        imageUrl:
-          'https://http2.mlstatic.com/D_NQ_NP_833076-MLU75585729246_042024-O.webp',
-        price: 123,
-        location: "3km's",
-      },
-      {
-        id: 13,
-        name: 'Harina Integral Pureza 1kg',
-        imageUrl:
-          'https://http2.mlstatic.com/D_NQ_NP_911811-MLA49960837578_052022-O.webp',
-        price: 123,
-        location: "3km's",
-      },
-    ];
+    return this.productModel
+      .find()
+      .populate({ path: 'stores', model: 'Store' })
+      .populate({ path: 'prices', model: 'Price' })
+      .exec();
+  }
+
+  private async upsertProduct(
+    id: string,
+    updateData: Partial<Product>,
+  ): Promise<Product> {
+    const product = await this.productModel
+      .findOneAndUpdate(
+        { _id: id },
+        { $set: updateData },
+        {
+          new: true, // Return the updated product
+          upsert: false, // Not create new document if not exist
+          runValidators: true, // Validate schema
+        },
+      )
+      .exec();
+
+    return product;
   }
 }
