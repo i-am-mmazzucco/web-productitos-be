@@ -12,6 +12,9 @@ export class Price extends Document {
   @Prop({ type: Types.ObjectId, ref: 'Store', required: true })
   store: Types.ObjectId;
 
+  @Prop({ type: Types.ObjectId, ref: 'Product', required: true })
+  product: Types.ObjectId;
+
   _id: Types.ObjectId;
 }
 

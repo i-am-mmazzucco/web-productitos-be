@@ -12,11 +12,13 @@ export class StoresService {
     storeName: string,
     coordinates: ICoordinates,
   ): Promise<Store> {
-    let store = await this.storeModel.findOne({ name: storeName }).exec();
+    let store = await this.storeModel
+      .findOne({ name: storeName.toLowerCase() })
+      .exec();
 
     if (!store) {
       store = new this.storeModel({
-        name: storeName,
+        name: storeName.toLowerCase(),
         lat: coordinates.lat,
         long: coordinates.lng,
       });

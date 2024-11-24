@@ -6,24 +6,17 @@ export class Product extends Document {
   @Prop({ required: false })
   image?: string;
 
+  @Prop({ required: false })
+  category?: string;
+
+  @Prop({ required: false })
+  description?: string;
+
   @Prop({ required: true })
   name: string;
 
   @Prop({ required: true })
   imageUrl: string;
-
-  @Prop({
-    type: [Number],
-    required: true,
-    validate: {
-      validator: function (value: number[]) {
-        return value.length === 2;
-      },
-      message:
-        'Coordinates must contain exactly two numbers: [longitude, latitude]',
-    },
-  })
-  coordinates: [number, number];
 
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Store' }], required: true })
   stores: Types.ObjectId[];

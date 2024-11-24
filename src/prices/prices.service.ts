@@ -10,6 +10,7 @@ export class PricesService {
   async upsertPrice(
     amount: number,
     storeId: string,
+    productId: string,
     currency = 'ARS',
   ): Promise<Price> {
     let price = await this.priceModel.findOne({ store: storeId }).exec();
@@ -23,6 +24,7 @@ export class PricesService {
         amount,
         currency,
         store: storeId,
+        product: productId,
       });
       await price.save();
     }

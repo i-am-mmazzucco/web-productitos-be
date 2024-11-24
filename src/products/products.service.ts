@@ -1,11 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreatePriceBodyDto, ProductIdParamsDto } from './products.dto';
+import {
+  CreatePriceBodyDto,
+  CreateProductBodyDto,
+  ProductIdParamsDto,
+} from './products.dto';
 import { StoresService } from '../stores/stores.service';
 import { PricesService } from '../prices/prices.service';
 import { Product } from 'src/schemas/products.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { mergeUniqueIds } from './helpers/mapper';
+import { EmailService } from 'src/email/email.service';
 
 @Injectable()
 export class ProductsService {
@@ -13,17 +18,12 @@ export class ProductsService {
     @InjectModel(Product.name) private productModel: Model<Product>,
     private readonly pricesService: PricesService,
     private readonly storesService: StoresService,
+    private readonly emailService: EmailService,
   ) {}
 
-  async create(): Promise<any> {
-    return {
-      id: 1,
-      name: 'Coca Cola Original 2,25 Litros',
-      imageUrl:
-        'https://http2.mlstatic.com/D_NQ_NP_839337-MLU72637726591_112023-O.webp',
-      price: 123,
-      location: "3km's",
-    };
+  async create(body: CreateProductBodyDto): Promise<Product> {
+    const newProduct = new this.productModel(body);
+    return newProduct.save();
   }
 
   async createPrice(
@@ -35,11 +35,18 @@ export class ProductsService {
     const price = await this.pricesService.upsertPrice(
       amount,
       store._id.toString(),
+      product._id.toString(),
     );
 
     return this.upsertProduct(params.productId, {
-      stores: mergeUniqueIds(product.stores, store._id),
-      prices: mergeUniqueIds(product.prices, price._id),
+      stores: mergeUniqueIds(
+        product.stores.map((store) => store._id),
+        store._id,
+      ),
+      prices: mergeUniqueIds(
+        product.prices.map((price) => price._id),
+        price._id,
+      ),
     });
   }
 
@@ -63,6 +70,10 @@ export class ProductsService {
       .populate({ path: 'stores', model: 'Store' })
       .populate({ path: 'prices', model: 'Price' })
       .exec();
+  }
+
+  async sendEmail(body: CreateProductBodyDto): Promise<void> {
+    return this.emailService.sendProductApprovalEmail(body);
   }
 
   private async upsertProduct(

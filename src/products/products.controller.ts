@@ -1,6 +1,19 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { CreatePriceBodyDto, ProductIdParamsDto } from './products.dto';
+import {
+  CreatePriceBodyDto,
+  CreateProductBodyDto,
+  ProductIdParamsDto,
+} from './products.dto';
 import { Product } from '../schemas/products.schema';
 
 @Controller('products')
@@ -13,8 +26,30 @@ export class ProductsController {
   }
 
   @Post()
-  async create(): Promise<Product> {
-    return this.productsService.create();
+  async sendEmail(@Body() body: CreateProductBodyDto): Promise<void> {
+    return this.productsService.sendEmail(body);
+  }
+
+  @Get('approve')
+  async approveProduct(
+    @Query('name') name: string,
+    @Query('imageUrl') imageUrl: string,
+    @Query('description') description?: string,
+    @Query('category') category?: string,
+  ): Promise<Product> {
+    if (!name || !imageUrl) {
+      throw new HttpException(
+        'Missing required parameters',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    return this.productsService.create({
+      name,
+      imageUrl,
+      description,
+      category,
+    });
   }
 
   @Get(':productId')
@@ -26,7 +61,7 @@ export class ProductsController {
   async createPrice(
     @Body() body: CreatePriceBodyDto,
     @Param() params: ProductIdParamsDto,
-  ): Promise<any> {
+  ): Promise<Product> {
     return this.productsService.createPrice(body, params);
   }
 }

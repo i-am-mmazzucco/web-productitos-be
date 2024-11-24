@@ -1,0 +1,67 @@
+[
+	{
+		"amount": 2800,
+		"currency": "ARS",
+		"product": "Coca Cola Original 2.25 Litros"
+	},
+	{
+		"amount": 2100,
+		"currency": "ARS",
+		"product": "Gaseosa Cola Pepsi 1.5 Litros"
+	},
+	{
+		"amount": 2600,
+		"currency": "ARS",
+		"product": "Gaseosa Tónica Schweppes 2.25 Litros"
+	},
+	{
+		"amount": 5500,
+		"currency": "ARS",
+		"product": "Dulce De Leche Clasico Milkaut Mediano"
+	},
+	{
+		"amount": 6100,
+		"currency": "ARS",
+		"product": "Chocolate Milka Con Almendras X 155grs"
+	},
+	{
+		"amount": 3500,
+		"currency": "ARS",
+		"product": "Tableta Chocolate Shot X 170 Gr"
+	},
+	{
+		"amount": 4590,
+		"currency": "ARS",
+		"product": "Relleno Untable Bon O Bon Mediano"
+	},
+	{
+		"amount": 4430,
+		"currency": "ARS",
+		"product": "Relleno Untable De Chocolate Aguila 3 En 1 Mediano"
+	},
+	{
+		"amount": 1400,
+		"currency": "ARS",
+		"product": "Azúcar Ledesma Clásica 1kg"
+	},
+	{
+		"amount": 5549,
+		"currency": "ARS",
+		"product": "Edulcorante Hileret Stevia en pastilla sin TACC frasco 300 u"
+	},
+	{
+		"amount": 3599,
+		"currency": "ARS",
+		"product": "Edulcorante Sidiet Clasico 200ml Sin Calorias sin tacc"
+	},
+	{
+		"amount": 1567,
+		"currency": "ARS",
+		"product": "Harina Pureza con levadura especial pizzas caseras 1kg"
+	},
+	{
+		"amount": 1855,
+		"currency": "ARS",
+		"product": "Harina Integral Pureza 1kg"
+	}
+]

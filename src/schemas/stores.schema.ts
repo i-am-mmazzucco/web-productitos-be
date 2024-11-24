@@ -7,10 +7,10 @@ export class Store extends Document {
   name: string;
 
   @Prop({ required: true })
-  lat: string;
+  lat: number;
 
   @Prop({ required: true })
-  long: string;
+  long: number;
 
   _id: Types.ObjectId;
 }
