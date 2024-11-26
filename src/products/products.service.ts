@@ -21,9 +21,11 @@ export class ProductsService {
     private readonly emailService: EmailService,
   ) {}
 
-  async create(body: CreateProductBodyDto): Promise<Product> {
+  async create(body: CreateProductBodyDto): Promise<string> {
     const newProduct = new this.productModel(body);
-    return newProduct.save();
+    const product = await newProduct.save();
+
+    return `http://localhost:3000/product/${product._id.toString()}`;
   }
 
   async createPrice(

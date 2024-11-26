@@ -7,25 +7,28 @@ export class EmailService {
   constructor(private readonly mailerService: MailerService) {}
 
   async sendProductApprovalEmail(product: CreateProductBodyDto): Promise<void> {
-    const approveUrl = `https://your-domain.com/api/products/approve?name=${encodeURIComponent(
+    const approveUrl = `http://localhost:3001/products/approve?name=${encodeURIComponent(
       product.name,
-    )}&imageUrl=${encodeURIComponent(product.imageUrl)}`;
-    const rejectUrl = `https://your-domain.com/api/products/reject?name=${encodeURIComponent(
-      product.name,
-    )}`;
+    )}&imageUrl=${encodeURIComponent(product.imageUrl)}${product.description ? `description=${encodeURIComponent(product.description)}` : ''}${product.description ? `category=${encodeURIComponent(product.category)}` : ''}`;
+    const rejectUrl = `http://localhost:3001/products/reject`;
 
-    await this.mailerService.sendMail({
-      to: 'recipient@example.com',
-      subject: 'New Product Pending Approval',
-      template: 'email-template',
-      context: {
-        name: product.name,
-        imageUrl: product.imageUrl,
-        description: product.description || 'No description provided',
-        category: product.category || 'No category specified',
-        approveUrl,
-        rejectUrl,
-      },
-    });
+    try {
+      return await this.mailerService.sendMail({
+        from: '<b>Productitos',
+        to: 'mateomazzucco53@gmail.com',
+        subject: 'Nuevo producto pendiente a aprobar',
+        template: 'new-product',
+        context: {
+          name: product.name,
+          imageUrl: product.imageUrl,
+          description: product.description || 'No cuenta con descripción.',
+          category: product.category || 'No cuenta con categoria especifica.',
+          approveUrl,
+          rejectUrl,
+        },
+      });
+    } catch (error) {
+      console.log(`Error: ${error}`);
+    }
   }
 }

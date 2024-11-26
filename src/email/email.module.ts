@@ -2,29 +2,31 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { Module } from '@nestjs/common';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { EmailService } from './email.service';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    MailerModule.forRoot({
-      transport: {
-        host: 'smtp.gmail.com',
-        port: 587,
-        secure: false,
-        auth: {
-          user: 'your-email@gmail.com', // Reemplaza con tu email
-          pass: 'your-app-password', // Contraseña generada en Google
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        transport: {
+          host: configService.get<string>('EMAIL_HOST'),
+          port: configService.get<number>('EMAIL_PORT'),
+          secure: false,
+          auth: {
+            user: configService.get<number>('EMAIL_USERNAME'),
+            pass: configService.get<number>('EMAIL_PASSWORD'),
+          },
         },
-      },
-      defaults: {
-        from: '"No Reply" <no-reply@gmail.com>',
-      },
-      template: {
-        dir: __dirname + '/templates',
-        adapter: new HandlebarsAdapter(),
-        options: {
-          strict: true,
+        template: {
+          dir: __dirname.replace('email', 'common/mail/templates'),
+          adapter: new HandlebarsAdapter(),
+          options: {
+            strict: true,
+          },
         },
-      },
+      }),
     }),
   ],
   providers: [EmailService],

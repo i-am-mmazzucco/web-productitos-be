@@ -4,8 +4,9 @@
   "sourceRoot": "src",
   "compilerOptions": {
     "deleteOutDir": true,
-    "assets": [{
-      "include": "**/*.json"
-    }]
+    "assets": [
+      { "include": "**/*.json" }, 
+      { "include": "common/mail/templates/**/*" }],
+    "watchAssets": true
   }
 }
