@@ -27,7 +27,7 @@ export class ProductsController {
     return this.productsService.getAll();
   }
 
-  @Post('approve')
+  @Get('approve')
   async approveProduct(
     @Res() res: Response,
     @Query('name') name: string,
