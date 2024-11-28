@@ -1,10 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { CreateProductBodyDto } from 'src/products/products.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class EmailService {
-  constructor(private readonly mailerService: MailerService) {}
+  constructor(
+    private readonly mailerService: MailerService,
+    private readonly configService: ConfigService,
+  ) {}
 
   async sendProductApprovalEmail(product: CreateProductBodyDto): Promise<void> {
     const approveUrl = `http://localhost:3001/products/approve?name=${encodeURIComponent(
@@ -15,7 +19,7 @@ export class EmailService {
     try {
       return await this.mailerService.sendMail({
         from: '<b>Productitos',
-        to: 'mateomazzucco53@gmail.com',
+        to: this.configService.get<string>('TO_EMAIL_ADMIN'),
         subject: 'Nuevo producto pendiente a aprobar',
         template: 'new-product',
         context: {
